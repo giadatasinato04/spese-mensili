@@ -3,54 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Spese Mensili</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
+
 body{
 font-family:Arial,sans-serif;
-background:#f5f7fa;
+background:#f4f6f9;
 margin:0;
 padding:20px;
 }
 
 .container{
-max-width:900px;
+max-width:1000px;
 margin:auto;
 background:white;
 padding:25px;
-border-radius:15px;
-box-shadow:0 0 20px rgba(0,0,0,.1);
+border-radius:20px;
+box-shadow:0 4px 20px rgba(0,0,0,.1);
 }
 
 h1{
 text-align:center;
-color:#2c3e50;
+margin-bottom:20px;
 }
 
-input,select{
+.saldo{
+font-size:32px;
+font-weight:bold;
+text-align:center;
+margin-bottom:25px;
+}
+
+input,
+select,
+button{
 padding:10px;
 margin:5px;
-border:1px solid #ddd;
 border-radius:8px;
+border:1px solid #ccc;
 }
 
 button{
-padding:10px 15px;
-border:none;
-background:#2ecc71;
+background:#28a745;
 color:white;
-border-radius:8px;
+border:none;
 cursor:pointer;
 }
 
 button:hover{
-background:#27ae60;
+background:#218838;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-margin-top:20px;
+margin-top:25px;
 }
 
 th,td{
@@ -59,22 +70,41 @@ border-bottom:1px solid #ddd;
 text-align:left;
 }
 
-.entrata{
-color:green;
+.spesa{
+color:#27ae60;
 font-weight:bold;
 }
 
-.uscita{
-color:red;
+.bollette{
+color:#2980b9;
 font-weight:bold;
 }
 
-.saldo{
-font-size:28px;
+.casa{
+color:#8e44ad;
 font-weight:bold;
-text-align:center;
-margin:20px 0;
 }
+
+.cibofuori{
+color:#e67e22;
+font-weight:bold;
+}
+
+.divertimento{
+color:#e91e63;
+font-weight:bold;
+}
+
+.carburante{
+color:#f1c40f;
+font-weight:bold;
+}
+
+canvas{
+margin-top:30px;
+max-height:350px;
+}
+
 </style>
 </head>
 
@@ -82,47 +112,163 @@ margin:20px 0;
 
 <div class="container">
 
-<h1>💰 Spese Mensili</h1>
+<h1>💰 Gestione Spese Mensili</h1>
 
 <div class="saldo">
-Saldo: € <span id="saldo">0.00</span>
+Saldo disponibile: € <span id="saldo">0.00</span>
 </div>
 
 <input type="date" id="data">
 
-<select id="tipo">
+<select id="tipo" onchange="mostraCategoria()">
 <option value="entrata">Entrata</option>
 <option value="uscita">Uscita</option>
 </select>
 
-<input type="text" id="descrizione" placeholder="Descrizione">
+<select id="categoria" style="display:none;">
 
-<input type="number" id="importo" placeholder="Importo">
+<option value="spesa">🛒 Spesa</option>
 
-<button onclick="aggiungiMovimento()">Aggiungi</button>
+<option value="bollette">💡 Bollette</option>
+
+<option value="casa">🏠 Casa</option>
+
+<option value="cibofuori">🍕 Cibo fuori</option>
+
+<option value="divertimento">🎭 Divertimento</option>
+
+<option value="carburante">⛽ Carburante</option>
+
+</select>
+
+<input
+type="text"
+id="descrizione"
+placeholder="Descrizione">
+
+<input
+type="number"
+id="importo"
+placeholder="Importo">
+
+<button onclick="aggiungiMovimento()">
+Aggiungi
+</button>
+
+<canvas id="grafico"></canvas>
 
 <table>
+
 <thead>
 <tr>
 <th>Data</th>
 <th>Tipo</th>
+<th>Categoria</th>
 <th>Descrizione</th>
 <th>Importo</th>
 </tr>
 </thead>
 
 <tbody id="tabella"></tbody>
+
 </table>
 
 </div>
 
 <script>
 
-let movimenti=[];
+let movimenti =
+JSON.parse(
+localStorage.getItem("movimenti")
+) || [];
+
+function mostraCategoria(){
+
+const tipo =
+document.getElementById("tipo").value;
+
+const categoria =
+document.getElementById("categoria");
+
+if(tipo==="uscita"){
+categoria.style.display="inline-block";
+}else{
+categoria.style.display="none";
+}
+
+}
+
+const colori = {
+spesa:"#27ae60",
+bollette:"#2980b9",
+casa:"#8e44ad",
+cibofuori:"#e67e22",
+divertimento:"#e91e63",
+carburante:"#f1c40f"
+};
+
+const ctx =
+document.getElementById("grafico");
+
+const grafico =
+new Chart(ctx,{
+type:"pie",
+data:{
+labels:[],
+datasets:[{
+data:[],
+backgroundColor:[]
+}]
+}
+});
 
 function aggiungiMovimento(){
 
-const data=document.getElementById('data').value;
-const tipo=document.getElementById('tipo').value;
-const descrizione=document.getElementById('descrizione').value;
-const importo=parseFloat(document.getElementById('importo').value
+const tipo =
+document.getElementById("tipo").value;
+
+const categoria =
+document.getElementById("categoria").value;
+
+const data =
+document.getElementById("data").value;
+
+const descrizione =
+document.getElementById("descrizione").value;
+
+const importo =
+parseFloat(
+document.getElementById("importo").value
+);
+
+if(
+!data ||
+!descrizione ||
+isNaN(importo)
+){
+alert("Compila tutti i campi");
+return;
+}
+
+movimenti.push({
+
+data:data,
+
+tipo:tipo,
+
+categoria:
+tipo==="uscita"
+? categoria
+: "",
+
+descrizione:descrizione,
+
+importo:importo
+
+});
+
+salvaDati();
+
+document.getElementById("descrizione").value="";
+document.getElementById("importo").value="";
+}
