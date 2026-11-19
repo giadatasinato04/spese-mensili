@@ -563,16 +563,14 @@ const coloriCategorie = {
 
 // GESTIONE MENU CATEGORIE
 
-function mostraCategoria() {
-
-    window.mostraCategoria = function() {
+window.mostraCategoria = function() {
 
     const tipo = document.getElementById("tipo").value;
 
     const categoria = document.getElementById("categoria");
 
     categoria.style.display =
-        tipo === "uscita" ? "block" : "none";
+        tipo === "uscita" ? "inline-block" : "none";
 
 };
 
