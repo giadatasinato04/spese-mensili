@@ -2,1641 +2,880 @@
 <html lang="it">
 
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>Spese Giada & Christian</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-}
-
-body{
-
-font-family:Arial,sans-serif;
-
-background:#f3f5f8;
-
-padding:20px;
-
-color:#333;
-
-}
-
-.container{
-
-max-width:1200px;
-
-margin:auto;
-
-background:white;
-
-padding:25px;
-
-border-radius:20px;
-
-box-shadow:0 5px 20px rgba(0,0,0,.12);
-
-}
-
-h1{
-
-text-align:center;
-
-margin-bottom:25px;
-
-}
-
-.cards{
-
-display:grid;
-
-grid-template-columns:
-repeat(auto-fit,minmax(200px,1fr));
-
-gap:15px;
-
-margin-bottom:25px;
-
-}
-
-.card{
-
-padding:20px;
-
-border-radius:15px;
-
-text-align:center;
-
-color:white;
-
-}
-
-.card.saldo{
-background:#2ecc71;
-}
-
-.card.entrate{
-background:#3498db;
-}
-
-.card.uscite{
-background:#e74c3c;
-}
-
-.card h2{
-
-font-size:18px;
-
-margin-bottom:10px;
-
-}
-
-.card p{
-
-font-size:28px;
-
-font-weight:bold;
-
-}
-
-.form-box{
-
-display:flex;
-
-flex-wrap:wrap;
-
-gap:10px;
-
-margin-bottom:25px;
-
-}
-
-input,
-select,
-button{
-
-padding:12px;
-
-border-radius:10px;
-
-border:1px solid #ccc;
-
-}
-
-button{
-
-border:none;
-
-cursor:pointer;
-
-}
-
-.btn-add{
-
-background:#2ecc71;
-
-color:white;
-
-}
-
-.btn-new{
-
-background:#f39c12;
-
-color:white;
-
-}
-
-.btn-export{
-
-background:#3498db;
-
-color:white;
-
-}
-
-table{
-
-width:100%;
-
-border-collapse:collapse;
-
-margin-top:20px;
-
-}
-
-th{
-
-background:#f5f5f5;
-
-}
-
-th,td{
-
-padding:10px;
-
-border-bottom:1px solid #ddd;
-
-text-align:left;
-
-}
-
-.delete-btn{
-
-background:#e74c3c;
-
-color:white;
-
-padding:6px 10px;
-
-border:none;
-
-border-radius:8px;
-
-}
-
-.summary{
-
-margin-top:25px;
-
-padding:15px;
-
-border-radius:12px;
-
-background:#f7f7f7;
-
-}
-
-.summary div{
-
-padding:6px 0;
-
-font-weight:bold;
-
-}
-
-.spesa{
-color:#27ae60;
-font-weight:bold;
-}
-
-.bollette{
-color:#2980b9;
-font-weight:bold;
-}
-
-.casa{
-color:#8e44ad;
-font-weight:bold;
-}
-
-.cibofuori{
-color:#e67e22;
-font-weight:bold;
-}
-
-.divertimento{
-color:#e91e63;
-font-weight:bold;
-}
-
-.carburante{
-color:#f1c40f;
-font-weight:bold;
-}
-
-.altro{
-color:#ffbaed;
-font-weight:bold;
-}
-
-.period-card{
-
-background:#f5f5f5;
-
-padding:15px;
-
-margin-top:10px;
-
-border-radius:10px;
-
-}
-
-canvas{
-
-max-height:400px;
-
-margin-top:30px;
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spese Giada & Christian</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f5f8;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, .12);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            text-align: center;
+            flex: 1;
+        }
+
+        .btn-logout {
+            background: #7f8c8d;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+        }
+
+        .card.saldo {
+            background: #2ecc71;
+        }
+
+        .card.entrate {
+            background: #3498db;
+        }
+
+        .card.uscite {
+            background: #e74c3c;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .form-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        input,
+        select,
+        button {
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-add {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-new {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-export {
+            background: #3498db;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: #f5f5f5;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 6px 10px;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .summary {
+            margin-top: 25px;
+            padding: 15px;
+            border-radius: 12px;
+            background: #f7f7f7;
+        }
+
+        .summary div {
+            padding: 6px 0;
+            font-weight: bold;
+        }
+
+        .period-card {
+            background: #f5f5f5;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 10px;
+        }
+
+        .period-card button {
+            margin-top: 10px;
+            margin-right: 8px;
+        }
+
+        canvas {
+            max-height: 400px;
+            margin-top: 30px;
+        }
+    </style>
 </head>
 
 <body>
-<div id="loginBox" style="
-max-width:400px;
-margin:50px auto;
-background:white;
-padding:25px;
-border-radius:15px;
-text-align:center;
-">
-
-<h2>🔐 Spese Giada & Christian</h2>
-
-<p>Accedi al conto condiviso</p>
-
-<input
-id="emailLogin"
-type="email"
-placeholder="La tua email"
-style="width:100%;margin:10px 0;"
->
-
-<input
-id="passwordLogin"
-type="password"
-placeholder="Password"
-style="width:100%;margin:10px 0;"
->
-
-<button
-id="loginButton"
-style="width:100%;padding:12px;background:#2ecc71;color:white;"
->
-Accedi
-</button>
-
-<p id="loginError" style="color:red;margin-top:10px;"></p>
-
-</div>
-<div class="container">
-
-<h1>
-💰 Gestione Spese Giada & Christian
-</h1>
-
-<div class="cards">
-
-<div class="card saldo">
-
-<h2>Saldo</h2>
-
-<p id="saldo">
-€ 0
-</p>
-
-</div>
-
-<div class="card entrate">
-
-<h2>Entrate</h2>
-
-<p id="totEntrate">
-€ 0
-</p>
-
-</div>
-
-<div class="card uscite">
-
-<h2>Uscite</h2>
-
-<p id="totUscite">
-€ 0
-</p>
-
-</div>
-
-</div>
-<!-- FORM INSERIMENTO MOVIMENTI -->
-
-<h2>➕ Nuovo movimento</h2>
-
-<div class="form-box">
-
-<input
-type="date"
-id="data"
->
-
-<select
-id="tipo"
-onchange="mostraCategoria()"
->
-<option value="entrata">Entrata</option>
-<option value="uscita">Uscita</option>
-</select>
-
-<select
-id="categoria"
-style="display:none"
->
-
-<option value="spesa">🛒 Spesa</option>
-
-<option value="bollette">💡 Bollette</option>
-
-<option value="casa">🏠 Casa</option>
-
-<option value="cibofuori">🍕 Cibo fuori</option>
-
-<option value="divertimento">🎭 Divertimento</option>
-
-<option value="carburante">⛽ Carburante</option>
-
-<option value="altro">✨ Altro</option>    
-
-</select>
-
-<input
-type="text"
-id="descrizione"
-placeholder="Descrizione"
->
-
-<input
-type="number"
-id="importo"
-placeholder="Importo €"
-step="0.01"
-min="0"
->
-
-<button
-class="btn-add"
-onclick="aggiungiMovimento()"
->
-Aggiungi movimento
-</button>
-
-</div>
-
-
-<!-- GRAFICO -->
-
-<h2>📊 Distribuzione delle spese</h2>
-
-<canvas id="grafico"></canvas>
-
-
-<!-- RIEPILOGO CATEGORIE -->
-
-<div class="summary">
-
-<h2>Riepilogo categorie</h2>
-
-<div id="riepilogoCategorie"></div>
-
-</div>
-
-
-<!-- RICERCA E FILTRO -->
-
-<h2 style="margin-top:30px">
-📅 Storico movimenti
-</h2>
-
-<div class="form-box">
-
-<input
-type="month"
-id="filtroMese"
-onchange="aggiornaTutto()"
->
-
-<input
-type="text"
-id="ricerca"
-placeholder="Cerca movimento..."
-oninput="aggiornaTutto()"
->
-
-<button
-class="btn-export"
-onclick="esportaCSV()"
->
-📥 Esporta CSV
-</button>
-
-</div>
-
-
-<!-- TABELLA MOVIMENTI -->
-
-<div style="overflow-x:auto">
-
-<table>
-
-<thead>
-
-<tr>
-
-<th>Data</th>
-
-<th>Tipo</th>
-
-<th>Categoria</th>
-
-<th>Descrizione</th>
-
-<th>Importo</th>
-
-<th>Azioni</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tabella">
-
-</tbody>
-
-</table>
-
-</div>
-
-
-<!-- GESTIONE PERIODI -->
-
-<div class="summary">
-
-<h2>📦 Gestione periodi</h2>
-
-<p style="margin:12px 0">
-Quando desiderate iniziare un nuovo periodo,
-archiviate quello corrente.
-Tutti i movimenti precedenti resteranno consultabili.
-</p>
-
-<button
-class="btn-new"
-onclick="chiudiPeriodo()"
->
-📦 Chiudi periodo e ricomincia
-</button>
-
-</div>
-
-
-<!-- ARCHIVIO -->
-
-<div class="summary">
-
-<h2>📚 Archivio periodi precedenti</h2>
-
-<div id="archivio"></div>
-
-</div>
-<!-- INIZIO LOGICA APPLICAZIONE -->
-
-<script type="module">
-    
-// FIREBASE - COLLEGAMENTO
-
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
-
-import {
-    getAuth,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
-}
-from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
-
-import {
-    getFirestore,
-    doc,
-    getDoc,
-    setDoc,
-    onSnapshot,
-    collection
-}
-from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
-
-const firebaseConfig = {
-    apiKey: "AIzaSyBWtWROd7bD14QVp32ZN4-mNybSnR4sUCo",
-    authDomain: "spese-giada-christian.firebaseapp.com",
-    projectId: "spese-giada-christian",
-    storageBucket: "spese-giada-christian.firebasestorage.app",
-    messagingSenderId: "897384737565",
-    appId: "1:897384737565:web:b89999505b1e62fefe8ff4"
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-
-const auth = getAuth(firebaseApp);
-
-const db = getFirestore(firebaseApp);
-
-const documentoCondiviso = doc(db, "sharedData", "current");
-
- // ACCESSO GIADA E CHRISTIAN
-
-const utentiAutorizzati = [
-    "tXTor6H0cBODkX7XydTz4bQrNWv2",
-    "ufuzQowjOoSFr7J2ikJePCz6Szs1"
-];
-
-const loginBox = document.getElementById("loginBox");
-const appContainer = document.querySelector(".container");
-
-appContainer.style.display = "none";
-
-document.getElementById("loginButton").addEventListener("click", async () => {
-
-    const email = document.getElementById("emailLogin").value.trim();
-    const password = document.getElementById("passwordLogin").value;
-
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        document.getElementById("loginError").textContent = "";
-    } catch (error) {
-        document.getElementById("loginError").textContent =
-            "Email o password non corretti.";
-    }
-
-});
-
-onAuthStateChanged(auth, user => {
-let sincronizzazioneAttiva = false;
-let annullaAscolto = null;
-let aggiornamentoRemoto = false;
-
-async function avviaSincronizzazione(user) {
-
-    try {
-
-        const documento = await getDoc(documentoCondiviso);
-
-        if (documento.exists()) {
-
-            const dati = documento.data();
-
-            movimenti = dati.movimenti || [];
-            periodi = dati.periodi || [];
-            dataInizio = dati.dataInizio || dataInizio;
-
-            localStorage.setItem(
-                "movimenti_v2",
-                JSON.stringify(movimenti)
-            );
-
-            localStorage.setItem(
-                "periodi_v2",
-                JSON.stringify(periodi)
-            );
-
-            localStorage.setItem(
-                "dataInizio_v2",
-                dataInizio
-            );
-
-        } else {
-
-            await setDoc(documentoCondiviso, {
-                movimenti: movimenti,
-                periodi: periodi,
-                dataInizio: dataInizio
-            });
-
+    <div id="loginBox" style="max-width:400px;margin:50px auto;background:white;padding:25px;border-radius:15px;text-align:center;box-shadow:0 5px 20px rgba(0,0,0,.12);">
+        <h2>🔐 Spese Giada & Christian</h2>
+        <p style="margin-top:8px;color:#666;">Accedi al conto condiviso</p>
+        <input id="emailLogin" type="email" placeholder="La tua email" style="width:100%;margin:12px 0 8px;">
+        <input id="passwordLogin" type="password" placeholder="Password" style="width:100%;margin:0 0 12px;">
+        <button id="loginButton" style="width:100%;padding:12px;background:#2ecc71;color:white;font-weight:bold;">
+            Accedi
+        </button>
+        <p id="loginError" style="color:red;margin-top:10px;"></p>
+    </div>
+
+    <div class="container" style="display:none;">
+        <div class="top-bar">
+            <h1>💰 Gestione Spese Giada & Christian</h1>
+            <button id="logoutButton" class="btn-logout">Esci</button>
+        </div>
+
+        <div class="cards">
+            <div class="card saldo">
+                <h2>Saldo</h2>
+                <p id="saldo">€ 0.00</p>
+            </div>
+            <div class="card entrate">
+                <h2>Entrate</h2>
+                <p id="totEntrate">€ 0.00</p>
+            </div>
+            <div class="card uscite">
+                <h2>Uscite</h2>
+                <p id="totUscite">€ 0.00</p>
+            </div>
+        </div>
+
+        <!-- FORM INSERIMENTO MOVIMENTI -->
+        <h2>➕ Nuovo movimento</h2>
+        <div class="form-box">
+            <input type="date" id="data">
+            <select id="tipo" onchange="mostraCategoria()">
+                <option value="entrata">Entrata</option>
+                <option value="uscita">Uscita</option>
+            </select>
+            <select id="categoria" style="display:none">
+                <option value="spesa">🛒 Spesa</option>
+                <option value="bollette">💡 Bollette</option>
+                <option value="casa">🏠 Casa</option>
+                <option value="cibofuori">🍕 Cibo fuori</option>
+                <option value="divertimento">🎭 Divertimento</option>
+                <option value="carburante">⛽ Carburante</option>
+                <option value="altro">✨ Altro</option>
+            </select>
+            <input type="text" id="descrizione" placeholder="Descrizione">
+            <input type="number" id="importo" placeholder="Importo €" step="0.01" min="0">
+            <button class="btn-add" onclick="aggiungiMovimento()">Aggiungi movimento</button>
+        </div>
+
+        <!-- GRAFICO -->
+        <h2>📊 Distribuzione delle spese</h2>
+        <canvas id="grafico"></canvas>
+
+        <!-- RIEPILOGO CATEGORIE -->
+        <div class="summary">
+            <h2>Riepilogo categorie</h2>
+            <div id="riepilogoCategorie"></div>
+        </div>
+
+        <!-- RICERCA E FILTRO -->
+        <h2 style="margin-top:30px">📅 Storico movimenti</h2>
+        <div class="form-box">
+            <input type="month" id="filtroMese" onchange="aggiornaTutto()">
+            <input type="text" id="ricerca" placeholder="Cerca movimento..." oninput="aggiornaTutto()">
+            <button class="btn-export" onclick="esportaCSV()">📥 Esporta CSV</button>
+        </div>
+
+        <!-- TABELLA MOVIMENTI -->
+        <div style="overflow-x:auto">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Tipo</th>
+                        <th>Categoria</th>
+                        <th>Descrizione</th>
+                        <th>Importo</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody id="tabella"></tbody>
+            </table>
+        </div>
+
+        <!-- GESTIONE PERIODI -->
+        <div class="summary">
+            <h2>📦 Gestione periodi</h2>
+            <p style="margin:12px 0">
+                Quando desiderate iniziare un nuovo periodo, archiviate quello corrente.
+                Tutti i movimenti precedenti resteranno consultabili.
+            </p>
+            <button class="btn-new" onclick="chiudiPeriodo()">📦 Chiudi periodo e ricomincia</button>
+        </div>
+
+        <!-- ARCHIVIO -->
+        <div class="summary">
+            <h2>📚 Archivio periodi precedenti</h2>
+            <div id="archivio"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp }
+            from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        }
+            from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+        import {
+            getFirestore,
+            doc,
+            getDoc,
+            setDoc,
+            onSnapshot
+        }
+            from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWtWROd7bD14QVp32ZN4-mNybSnR4sUCo",
+            authDomain: "spese-giada-christian.firebaseapp.com",
+            projectId: "spese-giada-christian",
+            storageBucket: "spese-giada-christian.firebasestorage.app",
+            messagingSenderId: "897384737565",
+            appId: "1:897384737565:web:b89999505b1e62fefe8ff4"
+        };
+
+        const firebaseApp = initializeApp(firebaseConfig);
+        const auth = getAuth(firebaseApp);
+        const db = getFirestore(firebaseApp);
+        const documentoCondiviso = doc(db, "sharedData", "current");
+
+        // UID autorizzati (Giada e Christian)
+        const utentiAutorizzati = [
+            "tXTor6H0cBODkX7XydTz4bQrNWv2",
+            "ufuzQowjOoSFr7J2ikJePCz6Szs1"
+        ];
+
+        const loginBox = document.getElementById("loginBox");
+        const appContainer = document.querySelector(".container");
+
+        // DATI LOCALI
+        let movimenti = JSON.parse(
+            localStorage.getItem("movimenti_v2") ||
+            localStorage.getItem("movimenti") ||
+            "[]"
+        );
+
+        let periodi = JSON.parse(
+            localStorage.getItem("periodi_v2") ||
+            localStorage.getItem("periodi") ||
+            "[]"
+        );
+
+        let dataInizio =
+            localStorage.getItem("dataInizio_v2") ||
+            localStorage.getItem("dataInizio") ||
+            new Date().toISOString().split("T")[0];
+
+        const nomiCategorie = {
+            spesa: "Spesa",
+            bollette: "Bollette",
+            casa: "Casa",
+            cibofuori: "Cibo fuori",
+            divertimento: "Divertimento",
+            carburante: "Carburante",
+            altro: "Altro"
+        };
+
+        const coloriCategorie = {
+            spesa: "#27ae60",
+            bollette: "#2980b9",
+            casa: "#8e44ad",
+            cibofuori: "#e67e22",
+            divertimento: "#e91e63",
+            carburante: "#f1c40f",
+            altro: "#ffbaed"
+        };
+
+        // INIZIALIZZAZIONE GRAFICO PRIMA DI AGGIORNATUTTO
+        const grafico = new Chart(
+            document.getElementById("grafico"),
+            {
+                type: "pie",
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: []
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        }
+                    }
+                }
+            }
+        );
+
+        // STATO SINCRONIZZAZIONE FIREBASE
+        let sincronizzazioneAttiva = false;
+        let annullaAscolto = null;
+
+        function salvaLocale() {
+            localStorage.setItem("movimenti_v2", JSON.stringify(movimenti));
+            localStorage.setItem("periodi_v2", JSON.stringify(periodi));
+            localStorage.setItem("dataInizio_v2", dataInizio);
         }
 
-        sincronizzazioneAttiva = true;
+        async function salvaDati() {
+            salvaLocale();
+            aggiornaTutto();
 
-        if (annullaAscolto) {
-            annullaAscolto();
+            if (!sincronizzazioneAttiva || !auth.currentUser) {
+                return;
+            }
+
+            try {
+                await setDoc(documentoCondiviso, {
+                    movimenti: movimenti,
+                    periodi: periodi,
+                    dataInizio: dataInizio,
+                    aggiornamento: new Date().toISOString()
+                });
+            } catch (errore) {
+                console.error("Errore Firebase:", errore);
+                alert("Attenzione: i dati sono salvati sul dispositivo, ma non sincronizzati online.");
+            }
         }
 
-        annullaAscolto = onSnapshot(
-            documentoCondiviso,
-            snapshot => {
+        async function avviaSincronizzazione() {
+            try {
+                const documento = await getDoc(documentoCondiviso);
 
-                if (!snapshot.exists()) return;
+                if (documento.exists()) {
+                    const dati = documento.data();
+                    movimenti = dati.movimenti || [];
+                    periodi = dati.periodi || [];
+                    dataInizio = dati.dataInizio || dataInizio;
+                    salvaLocale();
+                } else {
+                    await setDoc(documentoCondiviso, {
+                        movimenti: movimenti,
+                        periodi: periodi,
+                        dataInizio: dataInizio,
+                        aggiornamento: new Date().toISOString()
+                    });
+                }
 
-                aggiornamentoRemoto = true;
+                sincronizzazioneAttiva = true;
 
-                const dati = snapshot.data();
+                if (annullaAscolto) {
+                    annullaAscolto();
+                }
 
-                movimenti = dati.movimenti || [];
-                periodi = dati.periodi || [];
-                dataInizio = dati.dataInizio || dataInizio;
-
-                localStorage.setItem(
-                    "movimenti_v2",
-                    JSON.stringify(movimenti)
-                );
-
-                localStorage.setItem(
-                    "periodi_v2",
-                    JSON.stringify(periodi)
-                );
-
-                localStorage.setItem(
-                    "dataInizio_v2",
-                    dataInizio
+                annullaAscolto = onSnapshot(
+                    documentoCondiviso,
+                    snapshot => {
+                        if (!snapshot.exists()) return;
+                        const dati = snapshot.data();
+                        movimenti = dati.movimenti || [];
+                        periodi = dati.periodi || [];
+                        dataInizio = dati.dataInizio || dataInizio;
+                        salvaLocale();
+                        aggiornaTutto();
+                    },
+                    errore => {
+                        console.error("Errore sincronizzazione:", errore);
+                        alert("Problema nella sincronizzazione Firebase.");
+                    }
                 );
 
                 aggiornaTutto();
-
-                aggiornamentoRemoto = false;
-
-            },
-            errore => {
-                console.error("Errore sincronizzazione:", errore);
-                alert("Problema nella sincronizzazione Firebase.");
+            } catch (errore) {
+                console.error("Errore collegamento Firestore:", errore);
+                alert("Impossibile collegarsi al database. Controlla le regole di Firestore.");
+                aggiornaTutto();
             }
-        );
-
-        aggiornaTutto();
-
-    } catch (errore) {
-
-        console.error(errore);
-
-        alert("Impossibile collegarsi al database.");
-
-    }
-
-}
-
-onAuthStateChanged(auth, async user => {
-
-    if (!user) {
-
-        sincronizzazioneAttiva = false;
-
-        if (annullaAscolto) {
-            annullaAscolto();
-            annullaAscolto = null;
         }
 
-        appContainer.style.display = "none";
-        loginBox.style.display = "block";
-
-        return;
-
-    }
-
-    if (!utentiAutorizzati.includes(user.uid)) {
-
-        await signOut(auth);
-
-        alert("Utente non autorizzato.");
-
-        return;
-
-    }
-
-    loginBox.style.display = "none";
-    appContainer.style.display = "block";
-
-    await avviaSincronizzazione(user);
-
-});
-    
-// ARCHIVIO DATI
-
-let movimenti = JSON.parse(
-    localStorage.getItem("movimenti_v2") ||
-    localStorage.getItem("movimenti") ||
-    "[]"
-);
-
-let periodi = JSON.parse(
-    localStorage.getItem("periodi_v2") ||
-    localStorage.getItem("periodi") ||
-    "[]"
-);
-
-let dataInizio =
-    localStorage.getItem("dataInizio_v2") ||
-    localStorage.getItem("dataInizio");
-
-if (!dataInizio) {
-    dataInizio = new Date().toISOString().split("T")[0];
-}
-
-localStorage.setItem("movimenti_v2", JSON.stringify(movimenti));
-localStorage.setItem("periodi_v2", JSON.stringify(periodi));
-localStorage.setItem("dataInizio_v2", dataInizio);
-
-
-// NOMI DELLE CATEGORIE
-
-const nomiCategorie = {
-    spesa: "Spesa",
-    bollette: "Bollette",
-    casa: "Casa",
-    cibofuori: "Cibo fuori",
-    divertimento: "Divertimento",
-    carburante: "Carburante",
-    altro: "Altro"
-};
-
-
-// COLORI DELLE CATEGORIE
-
-const coloriCategorie = {
-    spesa: "#27ae60",
-    bollette: "#2980b9",
-    casa: "#8e44ad",
-    cibofuori: "#e67e22",
-    divertimento: "#e91e63",
-    carburante: "#f1c40f",
-    altro: "#ffbaed"
-};
-
-
-// GESTIONE MENU CATEGORIE
-
-window.mostraCategoria = function() {
-
-    const tipo = document.getElementById("tipo").value;
-
-    const categoria = document.getElementById("categoria");
-
-    categoria.style.display =
-        tipo === "uscita" ? "inline-block" : "none";
-
-};
-
-
-// AGGIUNTA MOVIMENTO
-
-function aggiungiMovimento() {
-
-    const data = document.getElementById("data").value;
-
-    const tipo = document.getElementById("tipo").value;
-
-    const categoria = document.getElementById("categoria").value;
-
-    const descrizione =
-        document.getElementById("descrizione").value.trim();
-
-    const importo = Number(
-        document.getElementById("importo").value
-    );
-
-    if (!data || !descrizione || !Number.isFinite(importo) || importo <= 0) {
-
-        alert("Controlla tutti i campi e inserisci un importo valido.");
-
-        return;
-
-    }
-    
-    const movimento = {
-
-        id: Date.now().toString() + Math.random(),
-
-        data: data,
-
-        tipo: tipo,
-
-        categoria: tipo === "uscita" ? categoria : "",
-
-        descrizione: descrizione,
-
-        importo: importo
-
-    };
-
-    movimenti.push(movimento);
-
-    salvaDati();
-
-    document.getElementById("descrizione").value = "";
-
-    document.getElementById("importo").value = "";
-
-}
-
-
-// SALVATAGGIO AUTOMATICO
-
-function salvaDati() async function salvaDati() {
-
-    // SALVATAGGIO LOCALE DI SICUREZZA
-
-    localStorage.setItem(
-        "movimenti_v2",
-        JSON.stringify(movimenti)
-    );
-
-    localStorage.setItem(
-        "periodi_v2",
-        JSON.stringify(periodi)
-    );
-
-    localStorage.setItem(
-        "dataInizio_v2",
-        dataInizio
-    );
-
-    aggiornaTutto();
-
-    // SALVATAGGIO ONLINE FIREBASE
-
-    if (!sincronizzazioneAttiva || !auth.currentUser) {
-        return;
-    }
-
-    try {
-
-        await setDoc(documentoCondiviso, {
-
-            movimenti: movimenti,
-
-            periodi: periodi,
-
-            dataInizio: dataInizio,
-
-            aggiornamento: new Date().toISOString()
-
+        // LOGIN E LOGOUT
+        document.getElementById("loginButton").addEventListener("click", async () => {
+            const email = document.getElementById("emailLogin").value.trim();
+            const password = document.getElementById("passwordLogin").value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                document.getElementById("loginError").textContent = "";
+            } catch (error) {
+                document.getElementById("loginError").textContent = "Email o password non corretti.";
+            }
         });
 
-        console.log("Dati salvati su Firebase!");
-
-    } catch (errore) {
-
-        console.error("Errore Firebase:", errore);
-
-        alert(
-            "Attenzione: il movimento è salvato sul dispositivo, ma non è stato sincronizzato online."
-        );
-
-    }
-
-}
-
-// CALCOLO TOTALI
-
-function calcolaTotali(lista) {
-
-    let entrate = 0;
-
-    let uscite = 0;
-
-    lista.forEach(m => {
-
-        if (m.tipo === "entrata") {
-
-            entrate += m.importo;
-
-        } else {
-
-            uscite += m.importo;
-
-        }
-
-    });
-
-    return {
-
-        entrate: entrate,
-
-        uscite: uscite,
-
-        saldo: entrate - uscite
-
-    };
-
-}
-
-
-// AGGIORNAMENTO GENERALE
-
-function aggiornaTutto() {
-
-    const filtro =
-        document.getElementById("filtroMese").value;
-
-    const ricerca =
-        document.getElementById("ricerca").value.toLowerCase();
-
-    let lista = [...movimenti];
-
-    if (filtro) {
-
-        lista = lista.filter(m =>
-            m.data.startsWith(filtro)
-        );
-
-    }
-
-    if (ricerca) {
-
-        lista = lista.filter(m =>
-            m.descrizione.toLowerCase().includes(ricerca) ||
-            (nomiCategorie[m.categoria] || "").toLowerCase().includes(ricerca)
-        );
-
-    }
-
-    lista.sort((a, b) =>
-        b.data.localeCompare(a.data)
-    );
-
-    const totali = calcolaTotali(lista);
-
-    document.getElementById("saldo").innerText =
-        "€ " + totali.saldo.toFixed(2);
-
-    document.getElementById("totEntrate").innerText =
-        "€ " + totali.entrate.toFixed(2);
-
-    document.getElementById("totUscite").innerText =
-        "€ " + totali.uscite.toFixed(2);
-
-    aggiornaTabella(lista);
-
-    aggiornaGrafico(lista);
-
-    aggiornaRiepilogo(lista);
-
-    aggiornaArchivio();
-
-}
-
-
-// FINE AGGIORNAMENTO GENERALE
-  // AGGIORNAMENTO TABELLA MOVIMENTI
-
-function aggiornaTabella(lista) {
-
-    const tabella = document.getElementById("tabella");
-
-    tabella.innerHTML = "";
-
-    lista.forEach(m => {
-
-        const riga = document.createElement("tr");
-
-        const categoria = m.categoria
-            ? nomiCategorie[m.categoria]
-            : "-";
-
-        const celle = [
-            m.data,
-            m.tipo === "entrata" ? "Entrata" : "Uscita",
-            categoria,
-            m.descrizione,
-            "€ " + m.importo.toFixed(2)
-        ];
-
-        celle.forEach((testo, index) => {
-
-            const td = document.createElement("td");
-
-            td.textContent = testo;
-
-            if (index === 2 && m.categoria) {
-                td.style.color = coloriCategorie[m.categoria];
-                td.style.fontWeight = "bold";
-            }
-
-            riga.appendChild(td);
-
+        document.getElementById("logoutButton").addEventListener("click", async () => {
+            await signOut(auth);
         });
 
-        const azioni = document.createElement("td");
-
-        const elimina = document.createElement("button");
-
-        elimina.className = "delete-btn";
-
-        elimina.textContent = "🗑";
-
-        elimina.onclick = function() {
-            eliminaMovimento(m.id);
-        };
-
-        azioni.appendChild(elimina);
-
-        riga.appendChild(azioni);
-
-        tabella.appendChild(riga);
-
-    });
-
-}
-
-
-// ELIMINAZIONE MOVIMENTO
-
-function eliminaMovimento(id) {
-
-    const conferma = confirm(
-        "Vuoi davvero eliminare questo movimento?"
-    );
-
-    if (!conferma) return;
-
-    movimenti = movimenti.filter(
-        m => m.id !== id
-    );
-
-    salvaDati();
-
-}
-
-
-// AGGIORNAMENTO GRAFICO A TORTA
-
-function aggiornaGrafico(lista) {
-
-    const categorie = {};
-
-    Object.keys(nomiCategorie).forEach(cat => {
-        categorie[cat] = 0;
-    });
-
-    lista.forEach(m => {
-
-        if (m.tipo === "uscita" && categorie[m.categoria] !== undefined) {
-
-            categorie[m.categoria] += m.importo;
-
-        }
-
-    });
-
-    const labels = [];
-
-    const valori = [];
-
-    const colori = [];
-
-    Object.keys(categorie).forEach(cat => {
-
-        if (categorie[cat] > 0) {
-
-            labels.push(nomiCategorie[cat]);
-
-            valori.push(categorie[cat]);
-
-            colori.push(coloriCategorie[cat]);
-
-        }
-
-    });
-
-    grafico.data.labels = labels;
-
-    grafico.data.datasets[0].data = valori;
-
-    grafico.data.datasets[0].backgroundColor = colori;
-
-    grafico.options.plugins.legend.display = true;
-
-    grafico.options.plugins.tooltip = {
-
-        callbacks: {
-
-            label: function(context) {
-
-                const totale = valori.reduce(
-                    (a,b) => a+b, 0
-                );
-
-                const percentuale = totale > 0
-                    ? (context.raw / totale * 100).toFixed(1)
-                    : 0;
-
-                return context.label +
-                    ": € " +
-                    context.raw.toFixed(2) +
-                    " (" +
-                    percentuale +
-                    "%)";
-
-            }
-
-        }
-
-    };
-
-    grafico.update();
-
-}
-
-
-// RIEPILOGO CATEGORIE
-
-function aggiornaRiepilogo(lista) {
-
-    const riepilogo =
-        document.getElementById("riepilogoCategorie");
-
-    riepilogo.innerHTML = "";
-
-    const categorie = {};
-
-    Object.keys(nomiCategorie).forEach(cat => {
-        categorie[cat] = 0;
-    });
-
-    lista.forEach(m => {
-
-        if (m.tipo === "uscita" && categorie[m.categoria] !== undefined) {
-
-            categorie[m.categoria] += m.importo;
-
-        }
-
-    });
-
-    const totale = Object.values(categorie).reduce(
-        (a,b) => a+b, 0
-    );
-
-    Object.keys(categorie).forEach(cat => {
-
-        const importo = categorie[cat];
-
-        if (importo > 0) {
-
-            const percentuale =
-                totale > 0
-                ? (importo / totale * 100).toFixed(1)
-                : 0;
-
-            const elemento = document.createElement("div");
-
-            elemento.style.color = coloriCategorie[cat];
-
-            elemento.innerHTML =
-                nomiCategorie[cat] +
-                " - € " +
-                importo.toFixed(2) +
-                " (" +
-                percentuale +
-                "%)";
-
-            riepilogo.appendChild(elemento);
-
-        }
-
-    });
-
-    if (totale === 0) {
-
-        riepilogo.innerHTML =
-            "<p>Non ci sono ancora uscite da visualizzare.</p>";
-
-    }
-
-}
-
-
-// INIZIALIZZAZIONE GRAFICO
-
-const grafico = new Chart(
-    document.getElementById("grafico"),
-    {
-        type: "pie",
-
-        data: {
-            labels: [],
-            datasets: [{
-                data: [],
-                backgroundColor: []
-            }]
-        },
-
-        options: {
-            responsive: true,
-
-            maintainAspectRatio: true,
-
-            plugins: {
-                legend: {
-                    position: "bottom"
+        onAuthStateChanged(auth, async user => {
+            if (!user) {
+                sincronizzazioneAttiva = false;
+                if (annullaAscolto) {
+                    annullaAscolto();
+                    annullaAscolto = null;
                 }
+                appContainer.style.display = "none";
+                loginBox.style.display = "block";
+                return;
+            }
+
+            if (!utentiAutorizzati.includes(user.uid)) {
+                await signOut(auth);
+                alert("Utente non autorizzato.");
+                return;
+            }
+
+            loginBox.style.display = "none";
+            appContainer.style.display = "block";
+            await avviaSincronizzazione();
+        });
+
+        // FUNZIONI APPLICATIVE
+        function mostraCategoria() {
+            const tipo = document.getElementById("tipo").value;
+            const categoria = document.getElementById("categoria");
+            categoria.style.display = tipo === "uscita" ? "inline-block" : "none";
+        }
+
+        function aggiungiMovimento() {
+            const data = document.getElementById("data").value;
+            const tipo = document.getElementById("tipo").value;
+            const categoria = document.getElementById("categoria").value;
+            const descrizione = document.getElementById("descrizione").value.trim();
+            const importo = Number(document.getElementById("importo").value);
+
+            if (!data || !descrizione || !Number.isFinite(importo) || importo <= 0) {
+                alert("Controlla tutti i campi e inserisci un importo valido.");
+                return;
+            }
+
+            const movimento = {
+                id: Date.now().toString() + "_" + Math.random().toString(36).slice(2, 7),
+                data,
+                tipo,
+                categoria: tipo === "uscita" ? categoria : "",
+                descrizione,
+                importo
+            };
+
+            movimenti.push(movimento);
+            salvaDati();
+
+            document.getElementById("descrizione").value = "";
+            document.getElementById("importo").value = "";
+        }
+
+        function calcolaTotali(lista) {
+            let entrate = 0;
+            let uscite = 0;
+
+            lista.forEach(m => {
+                if (m.tipo === "entrata") {
+                    entrate += m.importo;
+                } else {
+                    uscite += m.importo;
+                }
+            });
+
+            return {
+                entrate,
+                uscite,
+                saldo: entrate - uscite
+            };
+        }
+
+        function aggiornaTutto() {
+            const filtro = document.getElementById("filtroMese").value;
+            const ricerca = document.getElementById("ricerca").value.toLowerCase();
+
+            let lista = [...movimenti];
+
+            if (filtro) {
+                lista = lista.filter(m => m.data.startsWith(filtro));
+            }
+
+            if (ricerca) {
+                lista = lista.filter(m =>
+                    m.descrizione.toLowerCase().includes(ricerca) ||
+                    (nomiCategorie[m.categoria] || "").toLowerCase().includes(ricerca)
+                );
+            }
+
+            lista.sort((a, b) => b.data.localeCompare(a.data));
+
+            const totali = calcolaTotali(lista);
+            document.getElementById("saldo").innerText = "€ " + totali.saldo.toFixed(2);
+            document.getElementById("totEntrate").innerText = "€ " + totali.entrate.toFixed(2);
+            document.getElementById("totUscite").innerText = "€ " + totali.uscite.toFixed(2);
+
+            aggiornaTabella(lista);
+            aggiornaGrafico(lista);
+            aggiornaRiepilogo(lista);
+            aggiornaArchivio();
+        }
+
+        function aggiornaTabella(lista) {
+            const tabella = document.getElementById("tabella");
+            tabella.innerHTML = "";
+
+            lista.forEach(m => {
+                const riga = document.createElement("tr");
+                const categoria = m.categoria ? nomiCategorie[m.categoria] : "-";
+
+                const celle = [
+                    m.data,
+                    m.tipo === "entrata" ? "Entrata" : "Uscita",
+                    categoria,
+                    m.descrizione,
+                    "€ " + m.importo.toFixed(2)
+                ];
+
+                celle.forEach((testo, index) => {
+                    const td = document.createElement("td");
+                    td.textContent = testo;
+
+                    if (index === 2 && m.categoria) {
+                        td.style.color = coloriCategorie[m.categoria];
+                        td.style.fontWeight = "bold";
+                    }
+
+                    riga.appendChild(td);
+                });
+
+                const azioni = document.createElement("td");
+                const elimina = document.createElement("button");
+                elimina.className = "delete-btn";
+                elimina.textContent = "🗑";
+                elimina.onclick = () => eliminaMovimento(m.id);
+
+                azioni.appendChild(elimina);
+                riga.appendChild(azioni);
+                tabella.appendChild(riga);
+            });
+        }
+
+        function eliminaMovimento(id) {
+            if (!confirm("Vuoi davvero eliminare questo movimento?")) return;
+            movimenti = movimenti.filter(m => m.id !== id);
+            salvaDati();
+        }
+
+        function aggiornaGrafico(lista) {
+            const categorie = {};
+            Object.keys(nomiCategorie).forEach(cat => {
+                categorie[cat] = 0;
+            });
+
+            lista.forEach(m => {
+                if (m.tipo === "uscita" && categorie[m.categoria] !== undefined) {
+                    categorie[m.categoria] += m.importo;
+                }
+            });
+
+            const labels = [];
+            const valori = [];
+            const colori = [];
+
+            Object.keys(categorie).forEach(cat => {
+                if (categorie[cat] > 0) {
+                    labels.push(nomiCategorie[cat]);
+                    valori.push(categorie[cat]);
+                    colori.push(coloriCategorie[cat]);
+                }
+            });
+
+            grafico.data.labels = labels;
+            grafico.data.datasets[0].data = valori;
+            grafico.data.datasets[0].backgroundColor = colori;
+            grafico.options.plugins.legend.display = true;
+            grafico.options.plugins.tooltip = {
+                callbacks: {
+                    label: function (context) {
+                        const totale = valori.reduce((a, b) => a + b, 0);
+                        const percentuale = totale > 0 ? (context.raw / totale * 100).toFixed(1) : 0;
+                        return context.label + ": € " + context.raw.toFixed(2) + " (" + percentuale + "%)";
+                    }
+                }
+            };
+
+            grafico.update();
+        }
+
+        function aggiornaRiepilogo(lista) {
+            const riepilogo = document.getElementById("riepilogoCategorie");
+            riepilogo.innerHTML = "";
+
+            const categorie = {};
+            Object.keys(nomiCategorie).forEach(cat => {
+                categorie[cat] = 0;
+            });
+
+            lista.forEach(m => {
+                if (m.tipo === "uscita" && categorie[m.categoria] !== undefined) {
+                    categorie[m.categoria] += m.importo;
+                }
+            });
+
+            const totale = Object.values(categorie).reduce((a, b) => a + b, 0);
+
+            Object.keys(categorie).forEach(cat => {
+                const importo = categorie[cat];
+                if (importo > 0) {
+                    const percentuale = totale > 0 ? (importo / totale * 100).toFixed(1) : 0;
+                    const elemento = document.createElement("div");
+                    elemento.style.color = coloriCategorie[cat];
+                    elemento.textContent = nomiCategorie[cat] + " - € " + importo.toFixed(2) + " (" + percentuale + "%)";
+                    riepilogo.appendChild(elemento);
+                }
+            });
+
+            if (totale === 0) {
+                riepilogo.innerHTML = "<p>Non ci sono ancora uscite da visualizzare.</p>";
             }
         }
-    }
-);
-  // CHIUSURA DEL PERIODO
 
-function chiudiPeriodo() {
-
-    if (movimenti.length === 0) {
-
-        alert("Non ci sono movimenti da archiviare.");
-
-        return;
-
-    }
-
-    const conferma = confirm(
-        "Vuoi chiudere il periodo corrente? Tutti i movimenti verranno archiviati e inizierà un nuovo periodo."
-    );
-
-    if (!conferma) return;
-
-    const dataFine = new Date()
-        .toISOString()
-        .split("T")[0];
-
-    const totali = calcolaTotali(movimenti);
-
-    const periodo = {
-
-        id: Date.now().toString(),
-
-        inizio: dataInizio,
-
-        fine: dataFine,
-
-        movimenti: [...movimenti],
-
-        entrate: totali.entrate,
-
-        uscite: totali.uscite,
-
-        saldo: totali.saldo
-
-    };
-
-    periodi.push(periodo);
-
-    // ESPORTAZIONE AUTOMATICA DEL PERIODO
-
-    esportaPeriodoCSV(periodo);
-
-    // ARCHIVIAZIONE
-
-    localStorage.setItem(
-    "periodi_v2",
-    JSON.stringify(periodi)
-    );
-
-    // AZZERAMENTO DEL PERIODO CORRENTE
-
-    movimenti = [];
-
-    dataInizio = new Date()
-        .toISOString()
-        .split("T")[0];
-
-    localStorage.setItem(
-    "movimenti_v2",
-    JSON.stringify(movimenti)
-);
-
-    localStorage.setItem(
-    "dataInizio_v2",
-    dataInizio
-);
-
-    salvaDati();
-
-    alert(
-        "Periodo archiviato correttamente! È iniziato un nuovo periodo."
-    );
-
-}
-
-
-// ESPORTAZIONE CSV DEL PERIODO ARCHIVIATO
-
-function esportaPeriodoCSV(periodo) {
-
-    let righe = [];
-
-    righe.push([
-        "Data",
-        "Tipo",
-        "Categoria",
-        "Descrizione",
-        "Importo"
-    ]);
-
-    periodo.movimenti.forEach(m => {
-
-        righe.push([
-
-            m.data,
-
-            m.tipo,
-
-            nomiCategorie[m.categoria] || "-",
-
-            m.descrizione,
-
-            m.importo.toFixed(2)
-
-        ]);
-
-    });
-
-    righe.push([]);
-
-    righe.push([
-        "Totale entrate",
-        periodo.entrate.toFixed(2)
-    ]);
-
-    righe.push([
-        "Totale uscite",
-        periodo.uscite.toFixed(2)
-    ]);
-
-    righe.push([
-        "Saldo finale",
-        periodo.saldo.toFixed(2)
-    ]);
-
-    const csv = righe.map(riga =>
-        riga.map(valore =>
-            '"' + String(valore ?? "").replace(/"/g, '""') + '"'
-        ).join(";")
-    ).join("\n");
-
-    const blob = new Blob(
-        ["\uFEFF" + csv],
-        { type: "text/csv;charset=utf-8;" }
-    );
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-
-    link.href = url;
-
-    link.download =
-        "periodo_" +
-        periodo.inizio +
-        "_" +
-        periodo.fine +
-        ".csv";
-
-    link.click();
-
-setTimeout(() => {
-    URL.revokeObjectURL(url);
-}, 1500);
-}
-
-
-// ESPORTAZIONE CSV GENERALE
-
-function esportaCSV() {
-
-    const righe = [];
-
-    righe.push([
-        "Data",
-        "Tipo",
-        "Categoria",
-        "Descrizione",
-        "Importo"
-    ]);
-
-    movimenti.forEach(m => {
-
-        righe.push([
-
-            m.data,
-
-            m.tipo,
-
-            nomiCategorie[m.categoria] || "-",
-
-            m.descrizione,
-
-            m.importo.toFixed(2)
-
-        ]);
-
-    });
-
-    const csv = righe.map(riga =>
-        riga.map(valore =>
-            '"' + String(valore ?? "").replace(/"/g, '""') + '"'
-        ).join(";")
-    ).join("\n");
-
-    const blob = new Blob(
-        ["\uFEFF" + csv],
-        { type: "text/csv;charset=utf-8;" }
-    );
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-
-    link.href = url;
-
-    link.download = "movimenti_correnti.csv";
-
-    link.click();
-
-setTimeout(() => {
-    URL.revokeObjectURL(url);
-}, 1500);
-
-}
-
-
-// FINE PARTE 5
-  // AGGIORNAMENTO ARCHIVIO PERIODI
-
-function aggiornaArchivio() {
-
-    const archivio = document.getElementById("archivio");
-
-    archivio.innerHTML = "";
-
-    if (periodi.length === 0) {
-
-        archivio.innerHTML =
-            "<p>Non ci sono ancora periodi archiviati.</p>";
-
-        return;
-
-    }
-
-    [...periodi].reverse().forEach(periodo => {
-
-        const elemento = document.createElement("div");
-
-        elemento.className = "period-card";
-
-        elemento.innerHTML = `
-
-            <h3>
-                📁 Periodo archiviato
-            </h3>
-
-            <p>
-                Dal ${periodo.inizio} al ${periodo.fine}
-            </p>
-
-            <p>
-                Entrate: € ${periodo.entrate.toFixed(2)}
-            </p>
-
-            <p>
-                Uscite: € ${periodo.uscite.toFixed(2)}
-            </p>
-
-            <p>
-                <strong>
-                    Saldo finale: € ${periodo.saldo.toFixed(2)}
-                </strong>
-            </p>
-
-            <button
-                class="btn-export"
-                onclick="visualizzaPeriodo('${periodo.id}')">
-                Visualizza movimenti
-            </button>
-
-            <button
-                class="btn-export"
-                onclick="scaricaPeriodo('${periodo.id}')">
-                Scarica CSV
-            </button>
-
-        `;
-
-        archivio.appendChild(elemento);
-
-    });
-
-}
-
-
-// VISUALIZZAZIONE PERIODO ARCHIVIATO
-
-function visualizzaPeriodo(id) {
-
-    const periodo = periodi.find(
-        p => p.id === id
-    );
-
-    if (!periodo) return;
-
-    let testo = "";
-
-    periodo.movimenti.forEach(m => {
-
-        testo +=
-            m.data +
-            " | " +
-            (m.tipo === "entrata" ? "Entrata" : "Uscita") +
-            " | " +
-            (nomiCategorie[m.categoria] || "-") +
-            " | " +
-            m.descrizione +
-            " | € " +
-            m.importo.toFixed(2) +
-            "\n";
-
-    });
-
-    alert(
-        "MOVIMENTI DEL PERIODO\n\n" +
-        testo +
-        "\nSALDO FINALE: € " +
-        periodo.saldo.toFixed(2)
-    );
-
-}
-
-
-// SCARICA NUOVAMENTE UN PERIODO
-
-function scaricaPeriodo(id) {
-
-    const periodo = periodi.find(
-        p => p.id === id
-    );
-
-    if (!periodo) return;
-
-    esportaPeriodoCSV(periodo);
-
-}
-
-
-// INIZIALIZZAZIONE APPLICAZIONE
-
-document.getElementById("data").value =
-    new Date().toISOString().split("T")[0];
-
-// COLLEGAMENTO FUNZIONI AI PULSANTI HTML
-
-window.aggiungiMovimento = aggiungiMovimento;
-window.aggiornaTutto = aggiornaTutto;
-window.esportaCSV = esportaCSV;
-window.chiudiPeriodo = chiudiPeriodo;
-window.visualizzaPeriodo = visualizzaPeriodo;
-window.scaricaPeriodo = scaricaPeriodo;
-    
-mostraCategoria();
-
-aggiornaTutto();
-
-</script>
-
+        function chiudiPeriodo() {
+            if (movimenti.length === 0) {
+                alert("Non ci sono movimenti da archiviare.");
+                return;
+            }
+
+            if (!confirm("Vuoi chiudere il periodo corrente? Tutti i movimenti verranno archiviati e inizierà un nuovo periodo.")) {
+                return;
+            }
+
+            const dataFine = new Date().toISOString().split("T")[0];
+            const totali = calcolaTotali(movimenti);
+
+            const periodo = {
+                id: Date.now().toString(),
+                inizio: dataInizio,
+                fine: dataFine,
+                movimenti: [...movimenti],
+                entrate: totali.entrate,
+                uscite: totali.uscite,
+                saldo: totali.saldo
+            };
+
+            periodi.push(periodo);
+            esportaPeriodoCSV(periodo);
+
+            movimenti = [];
+            dataInizio = new Date().toISOString().split("T")[0];
+
+            salvaDati();
+            alert("Periodo archiviato correttamente! È iniziato un nuovo periodo.");
+        }
+
+        function esportaPeriodoCSV(periodo) {
+            const righe = [
+                ["Data", "Tipo", "Categoria", "Descrizione", "Importo"]
+            ];
+
+            periodo.movimenti.forEach(m => {
+                righe.push([
+                    m.data,
+                    m.tipo,
+                    nomiCategorie[m.categoria] || "-",
+                    m.descrizione,
+                    m.importo.toFixed(2)
+                ]);
+            });
+
+            righe.push([]);
+            righe.push(["Totale entrate", periodo.entrate.toFixed(2)]);
+            righe.push(["Totale uscite", periodo.uscite.toFixed(2)]);
+            righe.push(["Saldo finale", periodo.saldo.toFixed(2)]);
+
+            const csv = righe.map(riga =>
+                riga.map(valore => '"' + String(valore ?? "").replace(/"/g, '""') + '"').join(";")
+            ).join("\n");
+
+            const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "periodo_" + periodo.inizio + "_" + periodo.fine + ".csv";
+            link.click();
+
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+        }
+
+        function esportaCSV() {
+            const righe = [
+                ["Data", "Tipo", "Categoria", "Descrizione", "Importo"]
+            ];
+
+            movimenti.forEach(m => {
+                righe.push([
+                    m.data,
+                    m.tipo,
+                    nomiCategorie[m.categoria] || "-",
+                    m.descrizione,
+                    m.importo.toFixed(2)
+                ]);
+            });
+
+            const csv = righe.map(riga =>
+                riga.map(valore => '"' + String(valore ?? "").replace(/"/g, '""') + '"').join(";")
+            ).join("\n");
+
+            const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "movimenti_correnti.csv";
+            link.click();
+
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+        }
+
+        function aggiornaArchivio() {
+            const archivio = document.getElementById("archivio");
+            archivio.innerHTML = "";
+
+            if (periodi.length === 0) {
+                archivio.innerHTML = "<p>Non ci sono ancora periodi archiviati.</p>";
+                return;
+            }
+
+            [...periodi].reverse().forEach(periodo => {
+                const elemento = document.createElement("div");
+                elemento.className = "period-card";
+                elemento.innerHTML = `
+                    <h3>📁 Periodo archiviato</h3>
+                    <p>Dal ${periodo.inizio} al ${periodo.fine}</p>
+                    <p>Entrate: € ${periodo.entrate.toFixed(2)}</p>
+                    <p>Uscite: € ${periodo.uscite.toFixed(2)}</p>
+                    <p><strong>Saldo finale: € ${periodo.saldo.toFixed(2)}</strong></p>
+                    <button class="btn-export" onclick="visualizzaPeriodo('${periodo.id}')">Visualizza movimenti</button>
+                    <button class="btn-export" onclick="scaricaPeriodo('${periodo.id}')">Scarica CSV</button>
+                `;
+                archivio.appendChild(elemento);
+            });
+        }
+
+        function visualizzaPeriodo(id) {
+            const periodo = periodi.find(p => p.id === id);
+            if (!periodo) return;
+
+            let testo = "";
+            periodo.movimenti.forEach(m => {
+                testo +=
+                    m.data +
+                    " | " +
+                    (m.tipo === "entrata" ? "Entrata" : "Uscita") +
+                    " | " +
+                    (nomiCategorie[m.categoria] || "-") +
+                    " | " +
+                    m.descrizione +
+                    " | € " +
+                    m.importo.toFixed(2) +
+                    "\n";
+            });
+
+            alert("MOVIMENTI DEL PERIODO\n\n" + testo + "\nSALDO FINALE: € " + periodo.saldo.toFixed(2));
+        }
+
+        function scaricaPeriodo(id) {
+            const periodo = periodi.find(p => p.id === id);
+            if (!periodo) return;
+            esportaPeriodoCSV(periodo);
+        }
+
+        // IMPOSTA DATA ODIERNA E COLLEGA FUNZIONI AGLI HANDLER INLINE
+        document.getElementById("data").value = new Date().toISOString().split("T")[0];
+
+        window.mostraCategoria = mostraCategoria;
+        window.aggiungiMovimento = aggiungiMovimento;
+        window.aggiornaTutto = aggiornaTutto;
+        window.esportaCSV = esportaCSV;
+        window.chiudiPeriodo = chiudiPeriodo;
+        window.visualizzaPeriodo = visualizzaPeriodo;
+        window.scaricaPeriodo = scaricaPeriodo;
+
+        mostraCategoria();
+    </script>
 </body>
 
 </html>
