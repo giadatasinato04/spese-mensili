@@ -285,7 +285,43 @@ margin-top:30px;
 </head>
 
 <body>
+<div id="loginBox" style="
+max-width:400px;
+margin:50px auto;
+background:white;
+padding:25px;
+border-radius:15px;
+text-align:center;
+">
 
+<h2>🔐 Spese Giada & Christian</h2>
+
+<p>Accedi al conto condiviso</p>
+
+<input
+id="emailLogin"
+type="email"
+placeholder="La tua email"
+style="width:100%;margin:10px 0;"
+>
+
+<input
+id="passwordLogin"
+type="password"
+placeholder="Password"
+style="width:100%;margin:10px 0;"
+>
+
+<button
+id="loginButton"
+style="width:100%;padding:12px;background:#2ecc71;color:white;"
+>
+Accedi
+</button>
+
+<p id="loginError" style="color:red;margin-top:10px;"></p>
+
+</div>
 <div class="container">
 
 <h1>
@@ -507,7 +543,211 @@ onclick="chiudiPeriodo()"
 <!-- INIZIO LOGICA APPLICAZIONE -->
 
 <script type="module">
+    
+// FIREBASE - COLLEGAMENTO
 
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+}
+from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    onSnapshot,
+    collection
+}
+from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBWtWROd7bD14QVp32ZN4-mNybSnR4sUCo",
+    authDomain: "spese-giada-christian.firebaseapp.com",
+    projectId: "spese-giada-christian",
+    storageBucket: "spese-giada-christian.firebasestorage.app",
+    messagingSenderId: "897384737565",
+    appId: "1:897384737565:web:b89999505b1e62fefe8ff4"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+
+const auth = getAuth(firebaseApp);
+
+const db = getFirestore(firebaseApp);
+
+const documentoCondiviso = doc(db, "sharedData", "current");
+
+ // ACCESSO GIADA E CHRISTIAN
+
+const utentiAutorizzati = [
+    "tXTor6H0cBODkX7XydTz4bQrNWv2",
+    "ufuzQowjOoSFr7J2ikJePCz6Szs1"
+];
+
+const loginBox = document.getElementById("loginBox");
+const appContainer = document.querySelector(".container");
+
+appContainer.style.display = "none";
+
+document.getElementById("loginButton").addEventListener("click", async () => {
+
+    const email = document.getElementById("emailLogin").value.trim();
+    const password = document.getElementById("passwordLogin").value;
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        document.getElementById("loginError").textContent = "";
+    } catch (error) {
+        document.getElementById("loginError").textContent =
+            "Email o password non corretti.";
+    }
+
+});
+
+onAuthStateChanged(auth, user => {
+let sincronizzazioneAttiva = false;
+let annullaAscolto = null;
+let aggiornamentoRemoto = false;
+
+async function avviaSincronizzazione(user) {
+
+    try {
+
+        const documento = await getDoc(documentoCondiviso);
+
+        if (documento.exists()) {
+
+            const dati = documento.data();
+
+            movimenti = dati.movimenti || [];
+            periodi = dati.periodi || [];
+            dataInizio = dati.dataInizio || dataInizio;
+
+            localStorage.setItem(
+                "movimenti_v2",
+                JSON.stringify(movimenti)
+            );
+
+            localStorage.setItem(
+                "periodi_v2",
+                JSON.stringify(periodi)
+            );
+
+            localStorage.setItem(
+                "dataInizio_v2",
+                dataInizio
+            );
+
+        } else {
+
+            await setDoc(documentoCondiviso, {
+                movimenti: movimenti,
+                periodi: periodi,
+                dataInizio: dataInizio
+            });
+
+        }
+
+        sincronizzazioneAttiva = true;
+
+        if (annullaAscolto) {
+            annullaAscolto();
+        }
+
+        annullaAscolto = onSnapshot(
+            documentoCondiviso,
+            snapshot => {
+
+                if (!snapshot.exists()) return;
+
+                aggiornamentoRemoto = true;
+
+                const dati = snapshot.data();
+
+                movimenti = dati.movimenti || [];
+                periodi = dati.periodi || [];
+                dataInizio = dati.dataInizio || dataInizio;
+
+                localStorage.setItem(
+                    "movimenti_v2",
+                    JSON.stringify(movimenti)
+                );
+
+                localStorage.setItem(
+                    "periodi_v2",
+                    JSON.stringify(periodi)
+                );
+
+                localStorage.setItem(
+                    "dataInizio_v2",
+                    dataInizio
+                );
+
+                aggiornaTutto();
+
+                aggiornamentoRemoto = false;
+
+            },
+            errore => {
+                console.error("Errore sincronizzazione:", errore);
+                alert("Problema nella sincronizzazione Firebase.");
+            }
+        );
+
+        aggiornaTutto();
+
+    } catch (errore) {
+
+        console.error(errore);
+
+        alert("Impossibile collegarsi al database.");
+
+    }
+
+}
+
+onAuthStateChanged(auth, async user => {
+
+    if (!user) {
+
+        sincronizzazioneAttiva = false;
+
+        if (annullaAscolto) {
+            annullaAscolto();
+            annullaAscolto = null;
+        }
+
+        appContainer.style.display = "none";
+        loginBox.style.display = "block";
+
+        return;
+
+    }
+
+    if (!utentiAutorizzati.includes(user.uid)) {
+
+        await signOut(auth);
+
+        alert("Utente non autorizzato.");
+
+        return;
+
+    }
+
+    loginBox.style.display = "none";
+    appContainer.style.display = "block";
+
+    await avviaSincronizzazione(user);
+
+});
+    
 // ARCHIVIO DATI
 
 let movimenti = JSON.parse(
@@ -599,8 +839,6 @@ function aggiungiMovimento() {
         return;
 
     }
-
-console.log("Menu categorie:", document.getElementById("categoria"));
     
     const movimento = {
 
@@ -631,9 +869,11 @@ console.log("Menu categorie:", document.getElementById("categoria"));
 
 // SALVATAGGIO AUTOMATICO
 
-function salvaDati() {
+function salvaDati() async function salvaDati() {
 
-  localStorage.setItem(
+    // SALVATAGGIO LOCALE DI SICUREZZA
+
+    localStorage.setItem(
         "movimenti_v2",
         JSON.stringify(movimenti)
     );
@@ -649,6 +889,38 @@ function salvaDati() {
     );
 
     aggiornaTutto();
+
+    // SALVATAGGIO ONLINE FIREBASE
+
+    if (!sincronizzazioneAttiva || !auth.currentUser) {
+        return;
+    }
+
+    try {
+
+        await setDoc(documentoCondiviso, {
+
+            movimenti: movimenti,
+
+            periodi: periodi,
+
+            dataInizio: dataInizio,
+
+            aggiornamento: new Date().toISOString()
+
+        });
+
+        console.log("Dati salvati su Firebase!");
+
+    } catch (errore) {
+
+        console.error("Errore Firebase:", errore);
+
+        alert(
+            "Attenzione: il movimento è salvato sul dispositivo, ma non è stato sincronizzato online."
+        );
+
+    }
 
 }
 
@@ -1350,6 +1622,15 @@ function scaricaPeriodo(id) {
 document.getElementById("data").value =
     new Date().toISOString().split("T")[0];
 
+// COLLEGAMENTO FUNZIONI AI PULSANTI HTML
+
+window.aggiungiMovimento = aggiungiMovimento;
+window.aggiornaTutto = aggiornaTutto;
+window.esportaCSV = esportaCSV;
+window.chiudiPeriodo = chiudiPeriodo;
+window.visualizzaPeriodo = visualizzaPeriodo;
+window.scaricaPeriodo = scaricaPeriodo;
+    
 mostraCategoria();
 
 aggiornaTutto();
