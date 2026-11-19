@@ -565,6 +565,8 @@ const coloriCategorie = {
 
 function mostraCategoria() {
 
+    window.mostraCategoria = function() {
+
     const tipo = document.getElementById("tipo").value;
 
     const categoria = document.getElementById("categoria");
@@ -572,7 +574,7 @@ function mostraCategoria() {
     categoria.style.display =
         tipo === "uscita" ? "block" : "none";
 
-}
+};
 
 
 // AGGIUNTA MOVIMENTO
