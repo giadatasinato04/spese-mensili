@@ -219,7 +219,13 @@
             align-items: center;
             gap: 8px;
         }
-
+       .table-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            vertical-align: middle;
+        }
         .cat-dot {
             width: 10px;
             height: 10px;
@@ -620,7 +626,7 @@ td {
         };
 
         const coloriCategorie = {
-            spesa: "#16a34a",
+            spesa: "#0d9488",
             bollette: "#2563eb",
             casa: "#7c3aed",
             cibofuori: "#ea580c",
@@ -902,28 +908,52 @@ td {
 
             lista.forEach(m => {
                 const riga = document.createElement("tr");
-                const categoria = m.categoria ? nomiCategorie[m.categoria] : "-";
+
                 const celle = [
                     m.data,
                     m.tipo === "entrata" ? "Entrata" : "Uscita",
-                    categoria,
+                    "", // Colonna categoria: verrà popolata con il bollino
                     m.descrizione,
                     "€ " + m.importo.toFixed(2)
                 ];
 
                 celle.forEach((testo, index) => {
                     const td = document.createElement("td");
-                    td.textContent = testo;
+
+                    if (index === 2) {
+                        if (m.categoria && coloriCategorie[m.categoria]) {
+                            const bollino = document.createElement("span");
+                            bollino.className = "table-dot";
+                            bollino.style.backgroundColor = coloriCategorie[m.categoria];
+                            bollino.title = nomiCategorie[m.categoria] || m.categoria;
+                            td.appendChild(bollino);
+                        } else {
+                            td.textContent = "-";
+                        }
+                    } else {
+                        td.textContent = testo;
+                    }
+
                     if (index === 1) {
                         td.style.color = m.tipo === "entrata" ? "#16a34a" : "#dc2626";
                         td.style.fontWeight = "500";
                     }
-                    if (index === 2 && m.categoria) {
-                        td.style.color = coloriCategorie[m.categoria];
-                        td.style.fontWeight = "600";
-                    }
+
                     riga.appendChild(td);
                 });
+
+                const azioni = document.createElement("td");
+                const elimina = document.createElement("button");
+                elimina.className = "delete-btn";
+                elimina.textContent = "✕";
+                elimina.title = "Elimina movimento";
+                elimina.onclick = () => eliminaMovimento(m.id);
+
+                azioni.appendChild(elimina);
+                riga.appendChild(azioni);
+                tabella.appendChild(riga);
+            });
+        }
 
                 const azioni = document.createElement("td");
                 const elimina = document.createElement("button");
