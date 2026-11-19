@@ -14,20 +14,31 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f3f5f8;
-            padding: 20px;
-            color: #333;
-        }
+    font-family: Arial, sans-serif;
+    background: #f3f5f8;
+    padding: 20px 0;
+    color: #333;
+}
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, .12);
-        }
+.container {
+    max-width: 1200px;
+    margin: auto;
+    background: white;
+    padding: 25px 0;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, .12);
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px 0;
+    }
+
+    .container {
+        padding: 15px 0;
+        border-radius: 0;
+    }
+}
 
         .top-bar {
             display: flex;
@@ -122,30 +133,46 @@
             color: white;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+     table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
 
-        th {
-            background: #f5f5f5;
-        }
+th {
+    background: #f5f5f5;
+}
 
-        th,
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
+th, td {
+    padding: 8px 4px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+    font-size: 13px;
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+}
 
-        .delete-btn {
-            background: #e74c3c;
-            color: white;
-            padding: 6px 10px;
-            border: none;
-            border-radius: 8px;
-        }
+.delete-btn {
+    background: #e74c3c;
+    color: white;
+    padding: 4px 6px;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+@media (max-width: 600px) {
+    th, td {
+        padding: 6px 2px;
+        font-size: 11px;
+    }
+
+    .delete-btn {
+        padding: 3px 5px;
+        font-size: 11px;
+    }
+}
 
         .summary {
             margin-top: 25px;
@@ -399,6 +426,26 @@
             localStorage.setItem("dataInizio_v2", dataInizio);
         }
 
+        function unisciMovimentiSenzaDuplicati(remoti = [], locali = []) {
+            const mappa = new Map();
+            [...remoti, ...locali].forEach(m => {
+                if (m && m.id) {
+                    mappa.set(m.id, m);
+                }
+            });
+            return Array.from(mappa.values());
+        }
+
+        function unisciPeriodiSenzaDuplicati(remoti = [], locali = []) {
+            const mappa = new Map();
+            [...remoti, ...locali].forEach(p => {
+                if (p && p.id) {
+                    mappa.set(p.id, p);
+                }
+            });
+            return Array.from(mappa.values());
+        }
+
         async function salvaDati() {
             salvaLocale();
             aggiornaTutto();
@@ -426,10 +473,30 @@
 
                 if (documento.exists()) {
                     const dati = documento.data();
-                    movimenti = dati.movimenti || [];
-                    periodi = dati.periodi || [];
+                    const movimentiRemoti = dati.movimenti || [];
+                    const periodiRemoti = dati.periodi || [];
+
+                    const movimentiUniti = unisciMovimentiSenzaDuplicati(movimentiRemoti, movimenti);
+                    const periodiUniti = unisciPeriodiSenzaDuplicati(periodiRemoti, periodi);
+
+                    const ciSonoNovitaLocali =
+                        movimentiUniti.length > movimentiRemoti.length ||
+                        periodiUniti.length > periodiRemoti.length;
+
+                    movimenti = movimentiUniti;
+                    periodi = periodiUniti;
                     dataInizio = dati.dataInizio || dataInizio;
+
                     salvaLocale();
+
+                    if (ciSonoNovitaLocali) {
+                        await setDoc(documentoCondiviso, {
+                            movimenti: movimenti,
+                            periodi: periodi,
+                            dataInizio: dataInizio,
+                            aggiornamento: new Date().toISOString()
+                        });
+                    }
                 } else {
                     await setDoc(documentoCondiviso, {
                         movimenti: movimenti,
@@ -714,7 +781,7 @@
             }
         }
 
-        function chiudiPeriodo() {
+    async function chiudiPeriodo() {
             if (movimenti.length === 0) {
                 alert("Non ci sono movimenti da archiviare.");
                 return;
@@ -728,7 +795,7 @@
             const totali = calcolaTotali(movimenti);
 
             const periodo = {
-                id: Date.now().toString(),
+                id: Date.now().toString() + "_" + Math.random().toString(36).slice(2, 6),
                 inizio: dataInizio,
                 fine: dataFine,
                 movimenti: [...movimenti],
@@ -743,7 +810,7 @@
             movimenti = [];
             dataInizio = new Date().toISOString().split("T")[0];
 
-            salvaDati();
+            await salvaDati();
             alert("Periodo archiviato correttamente! È iniziato un nuovo periodo.");
         }
 
