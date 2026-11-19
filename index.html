@@ -502,20 +502,20 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js";
         import {
             getAuth,
             signInWithEmailAndPassword,
             onAuthStateChanged,
             signOut
-        } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js";
         import {
             getFirestore,
             doc,
             getDoc,
             setDoc,
             onSnapshot
-        } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+        } from "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js";
 
         const loginBox = document.getElementById("loginBox");
         const appContainer = document.querySelector(".container");
@@ -719,15 +719,24 @@
             db = getFirestore(firebaseApp);
             documentoCondiviso = doc(db, "sharedData", "current");
 
-            document.getElementById("loginButton").addEventListener("click", async () => {
+            const eseguiLogin = async () => {
                 const email = document.getElementById("emailLogin").value.trim();
                 const password = document.getElementById("passwordLogin").value;
+                const errorEl = document.getElementById("loginError");
+                errorEl.textContent = "Accesso in corso...";
+
                 try {
                     await signInWithEmailAndPassword(auth, email, password);
-                    document.getElementById("loginError").textContent = "";
+                    errorEl.textContent = "";
                 } catch (error) {
-                    document.getElementById("loginError").textContent = "Email o password non corretti.";
+                    console.error("Errore login:", error);
+                    errorEl.textContent = "Email o password non corretti.";
                 }
+            };
+
+            document.getElementById("loginButton").addEventListener("click", eseguiLogin);
+            document.getElementById("passwordLogin").addEventListener("keydown", e => {
+                if (e.key === "Enter") eseguiLogin();
             });
 
             document.getElementById("logoutButton").addEventListener("click", async () => {
@@ -787,3 +796,292 @@
                 descrizione,
                 importo
             });
+
+            salvaDati();
+            document.getElementById("descrizione").value = "";
+            document.getElementById("importo").value = "";
+        }
+
+        function calcolaTotali(lista) {
+            let entrate = 0;
+            let uscite = 0;
+            lista.forEach(m => {
+                if (m.tipo === "entrata") entrate += m.importo;
+                else uscite += m.importo;
+            });
+            return { entrate, uscite, saldo: entrate - uscite };
+        }
+
+        function aggiornaTutto() {
+            const filtro = document.getElementById("filtroMese").value;
+            const ricerca = document.getElementById("ricerca").value.toLowerCase();
+
+            let lista = [...movimenti];
+            if (filtro) lista = lista.filter(m => m.data.startsWith(filtro));
+            if (ricerca) {
+                lista = lista.filter(m =>
+                    m.descrizione.toLowerCase().includes(ricerca) ||
+                    (nomiCategorie[m.categoria] || "").toLowerCase().includes(ricerca)
+                );
+            }
+
+            lista.sort((a, b) => b.data.localeCompare(a.data));
+
+            const totali = calcolaTotali(lista);
+            document.getElementById("saldo").innerText = "€ " + totali.saldo.toFixed(2);
+            document.getElementById("totEntrate").innerText = "€ " + totali.entrate.toFixed(2);
+            document.getElementById("totUscite").innerText = "€ " + totali.uscite.toFixed(2);
+
+            aggiornaTabella(lista);
+            aggiornaGrafico(lista);
+            aggiornaRiepilogo(lista);
+            aggiornaArchivio();
+        }
+
+        function aggiornaTabella(lista) {
+            const tabella = document.getElementById("tabella");
+            tabella.innerHTML = "";
+
+            lista.forEach(m => {
+                const riga = document.createElement("tr");
+                const categoria = m.categoria ? nomiCategorie[m.categoria] : "-";
+                const celle = [
+                    m.data,
+                    m.tipo === "entrata" ? "Entrata" : "Uscita",
+                    categoria,
+                    m.descrizione,
+                    "€ " + m.importo.toFixed(2)
+                ];
+
+                celle.forEach((testo, index) => {
+                    const td = document.createElement("td");
+                    td.textContent = testo;
+                    if (index === 1) {
+                        td.style.color = m.tipo === "entrata" ? "#16a34a" : "#dc2626";
+                        td.style.fontWeight = "500";
+                    }
+                    if (index === 2 && m.categoria) {
+                        td.style.color = coloriCategorie[m.categoria];
+                        td.style.fontWeight = "600";
+                    }
+                    riga.appendChild(td);
+                });
+
+                const azioni = document.createElement("td");
+                const elimina = document.createElement("button");
+                elimina.className = "delete-btn";
+                elimina.textContent = "✕";
+                elimina.title = "Elimina movimento";
+                elimina.onclick = () => eliminaMovimento(m.id);
+
+                azioni.appendChild(elimina);
+                riga.appendChild(azioni);
+                tabella.appendChild(riga);
+            });
+        }
+
+        function eliminaMovimento(id) {
+            if (!confirm("Vuoi davvero eliminare questo movimento?")) return;
+            movimenti = movimenti.filter(m => m.id !== id);
+            salvaDati();
+        }
+
+        function aggiornaGrafico(lista) {
+            if (!grafico) return;
+
+            const categorie = {};
+            Object.keys(nomiCategorie).forEach(cat => { categorie[cat] = 0; });
+            lista.forEach(m => {
+                if (m.tipo === "uscita" && categorie[m.categoria] !== undefined) {
+                    categorie[m.categoria] += m.importo;
+                }
+            });
+
+            const labels = [];
+            const valori = [];
+            const colori = [];
+
+            Object.keys(categorie).forEach(cat => {
+                if (categorie[cat] > 0) {
+                    labels.push(nomiCategorie[cat]);
+                    valori.push(categorie[cat]);
+                    colori.push(coloriCategorie[cat]);
+                }
+            });
+
+            grafico.data.labels = labels;
+            grafico.data.datasets[0].data = valori;
+            grafico.data.datasets[0].backgroundColor = colori;
+            grafico.update();
+        }
+
+        function aggiornaRiepilogo(lista) {
+            const riepilogo = document.getElementById("riepilogoCategorie");
+            riepilogo.innerHTML = "";
+
+            const categorie = {};
+            Object.keys(nomiCategorie).forEach(cat => { categorie[cat] = 0; });
+            lista.forEach(m => {
+                if (m.tipo === "uscita" && categorie[m.categoria] !== undefined) {
+                    categorie[m.categoria] += m.importo;
+                }
+            });
+
+            const totale = Object.values(categorie).reduce((a, b) => a + b, 0);
+
+            Object.keys(categorie).forEach(cat => {
+                const importo = categorie[cat];
+                if (importo > 0) {
+                    const percentuale = totale > 0 ? (importo / totale * 100).toFixed(1) : 0;
+                    const riga = document.createElement("div");
+                    riga.className = "summary-item";
+                    riga.innerHTML = `
+                        <span class="summary-left">
+                            <span class="cat-dot" style="background:${coloriCategorie[cat]}"></span>
+                            <span>${nomiCategorie[cat]}</span>
+                        </span>
+                        <span class="summary-right">
+                            € ${importo.toFixed(2)} <span class="summary-perc">(${percentuale}%)</span>
+                        </span>
+                    `;
+                    riepilogo.appendChild(riga);
+                }
+            });
+
+            if (totale === 0) {
+                riepilogo.innerHTML = "<p style='font-size:13px;color:var(--text-muted);'>Non ci sono ancora uscite da visualizzare.</p>";
+            }
+        }
+
+        async function chiudiPeriodo() {
+            if (movimenti.length === 0) {
+                alert("Non ci sono movimenti da archiviare.");
+                return;
+            }
+            if (!confirm("Vuoi chiudere il periodo corrente? Tutti i movimenti verranno archiviati e inizierà un nuovo periodo.")) {
+                return;
+            }
+
+            const dataFine = new Date().toISOString().split("T")[0];
+            const totali = calcolaTotali(movimenti);
+
+            const periodo = {
+                id: Date.now().toString() + "_" + Math.random().toString(36).slice(2, 6),
+                inizio: dataInizio,
+                fine: dataFine,
+                movimenti: [...movimenti],
+                entrate: totali.entrate,
+                uscite: totali.uscite,
+                saldo: totali.saldo
+            };
+
+            periodi.push(periodo);
+            esportaPeriodoCSV(periodo);
+            movimenti = [];
+            dataInizio = new Date().toISOString().split("T")[0];
+
+            await salvaDati();
+            alert("Periodo archiviato correttamente! È iniziato un nuovo periodo.");
+        }
+
+        function esportaPeriodoCSV(periodo) {
+            const righe = [["Data", "Tipo", "Categoria", "Descrizione", "Importo"]];
+            periodo.movimenti.forEach(m => {
+                righe.push([m.data, m.tipo, nomiCategorie[m.categoria] || "-", m.descrizione, m.importo.toFixed(2)]);
+            });
+            righe.push([]);
+            righe.push(["Totale entrate", periodo.entrate.toFixed(2)]);
+            righe.push(["Totale uscite", periodo.uscite.toFixed(2)]);
+            righe.push(["Saldo finale", periodo.saldo.toFixed(2)]);
+
+            const csv = righe.map(riga =>
+                riga.map(valore => '"' + String(valore ?? "").replace(/"/g, '""') + '"').join(";")
+            ).join("\n");
+
+            const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "periodo_" + periodo.inizio + "_" + periodo.fine + ".csv";
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+        }
+
+        function esportaCSV() {
+            const righe = [["Data", "Tipo", "Categoria", "Descrizione", "Importo"]];
+            movimenti.forEach(m => {
+                righe.push([m.data, m.tipo, nomiCategorie[m.categoria] || "-", m.descrizione, m.importo.toFixed(2)]);
+            });
+
+            const csv = righe.map(riga =>
+                riga.map(valore => '"' + String(valore ?? "").replace(/"/g, '""') + '"').join(";")
+            ).join("\n");
+
+            const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "movimenti_correnti.csv";
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+        }
+
+        function aggiornaArchivio() {
+            const archivio = document.getElementById("archivio");
+            archivio.innerHTML = "";
+
+            if (periodi.length === 0) {
+                archivio.innerHTML = "<p style='font-size:13px;color:var(--text-muted);'>Non ci sono ancora periodi archiviati.</p>";
+                return;
+            }
+
+            [...periodi].reverse().forEach(periodo => {
+                const elemento = document.createElement("div");
+                elemento.className = "period-card";
+                elemento.innerHTML = `
+                    <h3>Periodo dal ${periodo.inizio} al ${periodo.fine}</h3>
+                    <p>Entrate: € ${periodo.entrate.toFixed(2)} · Uscite: € ${periodo.uscite.toFixed(2)}</p>
+                    <p style="color:var(--text-main);"><strong>Saldo finale: € ${periodo.saldo.toFixed(2)}</strong></p>
+                    <button class="btn-export" onclick="visualizzaPeriodo('${periodo.id}')">Visualizza</button>
+                    <button class="btn-export" onclick="scaricaPeriodo('${periodo.id}')">Scarica CSV</button>
+                `;
+                archivio.appendChild(elemento);
+            });
+        }
+
+        function visualizzaPeriodo(id) {
+            const periodo = periodi.find(p => p.id === id);
+            if (!periodo) return;
+            let testo = "";
+            periodo.movimenti.forEach(m => {
+                testo +=
+                    m.data +
+                    " | " +
+                    (m.tipo === "entrata" ? "Entrata" : "Uscita") +
+                    " | " +
+                    (nomiCategorie[m.categoria] || "-") +
+                    " | " +
+                    m.descrizione +
+                    " | € " +
+                    m.importo.toFixed(2) +
+                    "\n";
+            });
+            alert("MOVIMENTI DEL PERIODO\n\n" + testo + "\nSALDO FINALE: € " + periodo.saldo.toFixed(2));
+        }
+
+        function scaricaPeriodo(id) {
+            const periodo = periodi.find(p => p.id === id);
+            if (!periodo) return;
+            esportaPeriodoCSV(periodo);
+        }
+
+        document.getElementById("data").value = new Date().toISOString().split("T")[0];
+        window.mostraCategoria = mostraCategoria;
+        window.aggiungiMovimento = aggiungiMovimento;
+        window.aggiornaTutto = aggiornaTutto;
+        window.esportaCSV = esportaCSV;
+        window.chiudiPeriodo = chiudiPeriodo;
+        window.visualizzaPeriodo = visualizzaPeriodo;
+        window.scaricaPeriodo = scaricaPeriodo;
+        mostraCategoria();
+    </script>
