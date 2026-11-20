@@ -847,6 +847,13 @@
             }
         }
 
+function formattaGiornoMese(dataIso) {
+            if (!dataIso || typeof dataIso !== "string") return "-";
+            const parti = dataIso.split("-");
+            if (parti.length < 3) return dataIso;
+            return parti[2] + "/" + parti[1];
+        }
+
         function aggiornaTabella(lista) {
             const tabella = document.getElementById("tabella");
             tabella.innerHTML = "";
@@ -854,7 +861,7 @@
             lista.forEach(m => {
                 const riga = document.createElement("tr");
                 const celle = [
-                    m.data,
+                    formattaGiornoMese(m.data),
                     m.tipo === "entrata" ? "Entrata" : "Uscita",
                     "",
                     m.descrizione,
@@ -885,6 +892,19 @@
 
                     riga.appendChild(td);
                 });
+
+                const azioni = document.createElement("td");
+                const elimina = document.createElement("button");
+                elimina.className = "delete-btn";
+                elimina.textContent = "✕";
+                elimina.title = "Elimina movimento";
+                elimina.onclick = () => eliminaMovimento(m.id);
+
+                azioni.appendChild(elimina);
+                riga.appendChild(azioni);
+                tabella.appendChild(riga);
+            });
+        }
 
                 const azioni = document.createElement("td");
                 const elimina = document.createElement("button");
